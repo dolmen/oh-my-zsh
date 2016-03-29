@@ -85,12 +85,11 @@ main() {
   mv -f ~/.zshrc-omztemp ~/.zshrc
 
   # If this user's login shell is not already "zsh", attempt to switch.
-  TEST_CURRENT_SHELL=$(expr "$SHELL" : '.*/\(.*\)')
-  if [ "$TEST_CURRENT_SHELL" != "zsh" ]; then
+  if ! expr "x$SHELL" : '.*/zsh$'; then
     # If this platform provides a "chsh" command (not Cygwin), do it, man!
     if command -v chsh >/dev/null; then
       echo "${BLUE}Time to change your default shell to zsh!${NORMAL}"
-      chsh -s $(grep /zsh$ /etc/shells | tail -1)
+      chsh -s $(sed -n '/\/zsh$/{p;q}' /etc/shells)
     # Else, suggest the user do so manually.
     else
       echo "I can't change your shell automatically because this system does not have chsh."
